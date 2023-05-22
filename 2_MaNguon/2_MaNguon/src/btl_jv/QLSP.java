@@ -35,7 +35,38 @@ public class QLSP extends javax.swing.JFrame {
     /**
      * Creates new form QLSP
      */
-    
+    DBEngine db = new DBEngine();
+    String fName = "SanPham.txt";
+    ArrayList<SanPham> dssp = new ArrayList<>();
+    int chon = -1;
+    SanPham sp = new SanPham();
+
+    void cbxSize() {
+        String size[] = {"S", "M", "L", "XL", "2XL", "3XL"};
+        cboSize.setModel(new DefaultComboBoxModel<>(size));
+    }
+
+    public QLSP() {
+        initComponents();
+        docFile();
+        cbxSize();
+//        dssp.add(new SanPham("SP01", "Quần áo thể dục", "M", 150, 140000));
+//        dssp.add(new SanPham("SP02", "Áo khoác đồng phục", "S", 100, 170000));
+//        dssp.add(new SanPham("SP03", "Đồng phục thực hành", "XL", 53, 18000));
+//        dssp.add(new SanPham("SP04", "Áo khoác đồng phục", "XL", 120, 17000));
+//        dssp.add(new SanPham("SP05", "Quần áo thể dục", "S", 53, 140000));
+//        dssp.add(new SanPham("SP06", "Đồng phục thực hành", "XL", 73, 18000));
+
+        tblSP.setModel(new TableSP(dssp));
+
+    }
+
+    public void loadTableSP() {
+        //docFile();
+        tblSP.setModel(new TableSP(dssp));
+        luuFile();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -202,20 +233,17 @@ public class QLSP extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtSlcon, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(txtTenSP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtMaSP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(10, 10, 10)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtMaSP, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                            .addComponent(txtTenSP)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtSlcon, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(42, 42, 42)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -227,7 +255,7 @@ public class QLSP extends javax.swing.JFrame {
                             .addComponent(txtDonGia, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cboSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(btnReset))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -416,64 +444,237 @@ public class QLSP extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    public void luuFile() {
+        try {
+            db.luuFile(fName, dssp);
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+    }
 
+    public void docFile() {
+        try {
+            dssp = (ArrayList) db.docFile(fName);
+        } catch (Exception e) {
+            System.out.println("Có lỗi: " + e.toString());
+        }
+    }
+
+    public JTextField getTxtDonGia() throws Exception {
+        if (Double.parseDouble(txtDonGia.getText()) < 0) {
+            throw new Exception("Đơn giá phải lớn hơn 0");
+        }
+        return txtDonGia;
+    }
+
+    public JTextField getTxtMaSP() throws Exception {
+        if (txtMaSP.getText().equals("")) {
+            throw new Exception("Không được để trống mã sản phẩm");
+        }
+        return txtMaSP;
+    }
+
+    public JTextField getTxtSlcon() throws Exception {
+        if (Integer.parseInt(txtSlcon.getText()) < 0) {
+            throw new Exception("Số lượng còn >= 0");
+        }
+        return txtSlcon;
+    }
+
+    public JTextField getTxtTenSP() throws Exception {
+        if (txtTenSP.getText().equals("")) {
+            throw new Exception("Không được để trống tên sẩm phẩm");
+        }
+        return txtTenSP;
+    }
+
+    public JTextField getTxtTimKiem() throws Exception {
+        if (txtTimKiem.getText().equals("")) {
+            throw new Exception("Nhập tên sản phẩm cần tìm");
+        }
+        return txtTimKiem;
+    }
 
     private void btnThemMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemMoiActionPerformed
         // TODO add your handling code here:
-        
+        try {
+            sp = new SanPham(getTxtMaSP().getText(), getTxtTenSP().getText(), cboSize.getSelectedItem().toString(), Integer.parseInt(getTxtSlcon().getText()), Double.parseDouble(getTxtDonGia().getText()));
+            if (!dssp.contains(sp)) {
+                dssp.add(sp);
+                loadTableSP();
+                JOptionPane.showMessageDialog(QLSP.this, "Thêm sản phẩm thành công", "", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(QLSP.this, "Sản phẩm đã tồn tại", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(QLSP.this, "Lỗi " + e.toString(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnThemMoiActionPerformed
-    
-    
+    Workbook workbook = new XSSFWorkbook(); // tạo mới đối tượng đại diện cho excel.
+    Sheet sheet = (Sheet) workbook.createSheet("SanPham"); // tạo 1 đối tượng sheet, đại diện cho sheet bên trong file Excel
+    public void pt_XuatFileExcel(JTable table) throws IOException {
+        // tạo tên cột 
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(table.getColumnName(i));
+            // tạo font chữ đận cho tên cột 
+            org.apache.poi.ss.usermodel.Font font = workbook.createFont();
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            org.apache.poi.ss.usermodel.CellStyle style = workbook.createCellStyle();
+            style.setFont(font);
+            headerCell.setCellStyle(style);
+        }
+        // thêm dữ liệu trong jtable vào trong file
+        for (int i = 0; i < table.getRowCount(); i++) {
+            Row row = sheet.createRow(i + 1);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                Cell cell = row.createCell(j);
+                cell.setCellValue(table.getValueAt(i, j).toString());
+            }
+        }
+        FileOutputStream fileOut = new FileOutputStream("San_Pham.xlsx");
+        workbook.write(fileOut);
+        fileOut.close();
+        JOptionPane.showMessageDialog(null, "Đã xuất ra file: San_Pham.xlsx");
+    }
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
-
+        try {
+            // TODO add your handling code here:
+            pt_XuatFileExcel(tblSP);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
     }//GEN-LAST:event_btnThongKeActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
         // TODO add your handling code here:
-        
+        try {
+            int row = tblSP.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(QLSP.this, "Vui lòng chọn sản phẩm muốn xóa", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                int confirm = JOptionPane.showConfirmDialog(QLSP.this,
+                        "Bạn có chắc muốn xóa sản phẩm này?",
+                        "Xác nhận",
+                        JOptionPane.YES_NO_OPTION);
+                //int confirm =JOptionPane.showConfirmDialog(QLSP.this,"Ban co chac muon xoa?");
+                if (confirm == JOptionPane.YES_OPTION) {
+                    dssp.remove(row);
+                    loadTableSP();
+                    JOptionPane.showMessageDialog(QLSP.this, "Xóa sản phẩm thành công", "", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
+
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-        
+        chon = tblSP.getSelectedRow();
+        if (chon != -1) {
+            try {
+                sp = dssp.get(chon);
+                SanPham sps = new SanPham();
+                sps.setMaSP(sp.maSP);
+                sps.setTenSP(getTxtTenSP().getText() + "");
+                sps.setSize(cboSize.getSelectedItem().toString());
+                sps.setSlCon(Integer.parseInt(getTxtSlcon().getText()));
+                sps.setGiaTien(Double.parseDouble(getTxtDonGia().getText()));
+                dssp.set(chon, sps);
+                loadTableSP();
+                JOptionPane.showMessageDialog(QLSP.this, "Sửa sản phẩm thành công", "", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(QLSP.this, "Có lỗi " + e.toString(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        } else
+            JOptionPane.showMessageDialog(QLSP.this, "Vui lòng chọn sản phẩm muốn sửa", "ERROR", JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         // TODO add your handling code here:
-        
+        txtMaSP.setText("");
+        cboSize.setSelectedIndex(0);
+        txtTenSP.setText("");
+        txtSlcon.setText("");
+        txtDonGia.setText("");
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void tblSPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSPMouseClicked
         // TODO add your handling code here:
+        chon = tblSP.getSelectedRow();
+        if (chon != -1) {
+            sp = dssp.get(chon);
+            txtMaSP.setText(sp.getMaSP() + "");
+            txtTenSP.setText(sp.getTenSP() + "");
+            cboSize.setSelectedItem(sp.getSize());
+            txtSlcon.setText((sp.getSlCon()) + "");
+            txtDonGia.setText(sp.getGiaTien() + "");
+        }
     }//GEN-LAST:event_tblSPMouseClicked
 
     private void btnTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimKiemActionPerformed
-        
+        ArrayList<SanPham> dstim = new ArrayList<>();
+        try {
+            for (SanPham a : dssp) {
+                if (getTxtTimKiem().getText().trim().equalsIgnoreCase(a.getTenSP())) {
+                    dstim.add(a);
+                }
+            }
+            tblSP.setModel(new TableSP(dstim));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(QLSP.this, e.toString(), "Error:", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnTimKiemActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // TODO add your handling code here:
-        
+        Comparator<SanPham> c1 = new Comparator<SanPham>() {
+            @Override
+            public int compare(SanPham o1, SanPham o2) {
+                return Double.compare(o1.getGiaTien(), o2.getGiaTien());
+            }
+        };
+        sort(dssp, c1);
+        loadTableSP();
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
         // TODO add your handling code here:
-        
+        Comparator<SanPham> c2 = new Comparator<SanPham>() {
+            @Override
+            public int compare(SanPham o1, SanPham o2) {
+                return Double.compare(o1.getGiaTien(), o2.getGiaTien());
+            }
+        };
+        sort(dssp, c2.reversed());
+        loadTableSP();
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void trangChuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trangChuMouseClicked
         // TODO add your handling code here:
-        
+        new Admin().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_trangChuMouseClicked
 
     private void jMenu2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu2MouseClicked
         // TODO add your handling code here:
-        
+        loadTableSP();
+        txtMaSP.setText("");
+        cboSize.setSelectedIndex(-1);
+        txtTenSP.setText("");
+        txtSlcon.setText("");
+        txtDonGia.setText("");
     }//GEN-LAST:event_jMenu2MouseClicked
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        if (JOptionPane.showConfirmDialog(null, "Bạn chắc chắn muốn đóng ?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     /**
