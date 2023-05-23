@@ -22,12 +22,29 @@ public class QLTK_Jframe extends javax.swing.JFrame implements Serializable{
     /**
      * Creates new form QLTK_Jframe
      */
-   
+    int i = 0;
+    public void fakeData(){
+        KhachHang a1= new KhachHang("1", "Admin", "admin","Ha Noi","admin@gmail.com", 123456789, "admin", "admin", "user");
+        KhachHang a2= new KhachHang("2", "User", "KTPM1","Ha Noi","user@gmail.com", 123456789, "user", "1234", "user");
+        KhachHang a3= new KhachHang("3", "abc", "abc","Ha Noi","abc@gmail.com", 98653251, "abc", "1234", "user");
+        dstk.add(a1);
+        dstk.add(a2);
+        dstk.add(a3);
+    }
     public QLTK_Jframe() {
         initComponents();
-     
+        fakeData();
+        loadtable(dstk);
     }
-    
+    int dongchon = -1;
+    ArrayList<KhachHang> dstk = new ArrayList<KhachHang>();
+    KhachHang tk = new KhachHang();
+    DBEngine db = new DBEngine();
+    String fName = "dsTaiKhoan.txt";
+    public void loadtable(ArrayList<KhachHang> dstk) {
+        tableTK.setModel(new TableTK(dstk));
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -266,49 +283,190 @@ public class QLTK_Jframe extends javax.swing.JFrame implements Serializable{
 
     private void butthemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butthemActionPerformed
         // TODO add your handling code here:
+        try {
+            String userName= getTxttk().getText();
+            i = ++i;
+        String hoTen = getTxtten().getText();
+        String phuTrach = getTxtid().getText();
+        String diaChi = getTxtdiachi().getText();
+        String email = getTxtemail().getText();
+        int sdt = Integer.parseInt(getTxtsdt().getText());
+        String passWord = getTxtmk().getText();
+        tk = new KhachHang(String.valueOf(i), hoTen, phuTrach, diaChi, email, sdt, userName, passWord, "user");
+        int dem=0;
+        for(KhachHang i:dstk){
+            if(tk.userName.compareToIgnoreCase(i.userName)==0){
+                if(dstk.contains(i)){
+                    JOptionPane.showMessageDialog(this,"Tên tài khoản ko được trùng nhau");
+                    dem++;
+                }  
+            }
+        }
+        if(dem==0){
+            dstk.add(tk);
+        }
+        loadtable(dstk);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.toString());
+        }
         
     }//GEN-LAST:event_butthemActionPerformed
 
     private void butsuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butsuaActionPerformed
         // TODO add your handling code here:
+        dongchon = tableTK.getSelectedRow();
+        if (dongchon != -1) {
+        try {
+            tk = dstk.get(dongchon);
+            tk.setId(tk.id);
+            tk.setHoten(getTxtten().getText() + "");
+            tk.setDiachi(getTxtdiachi().getText() + "");
+            tk.setEmail(getTxtemail().getText() + "");
+            tk.setSdt(Integer.parseInt(getTxtsdt().getText()));
+            tk.setPhutrach(getTxtid().getText()+"");
+            tk.setUserName(getTxttk().getText()+"");
+            tk.setPassWord(getTxtmk().getText()+"");
+            dstk.set(dongchon, tk);
+            JOptionPane.showMessageDialog(this, "Sua thanh cong","Thong bao",JOptionPane.WIDTH);
+            loadtable(dstk);
+        
+        } catch (Exception e) {
+               JOptionPane.showMessageDialog(this, e.toString());
+        }
+        }
         
     }//GEN-LAST:event_butsuaActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        if (JOptionPane.showConfirmDialog(null, "Bạn chắc chắn muốn đóng ?", "Thong bao", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     private void butxoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butxoaActionPerformed
         // TODO add your handling code here:
         int row= tableTK.getSelectedRow();
-        
+        if(row ==-1)
+            JOptionPane.showMessageDialog(this, " vui long chon tai khoan can xoa","Thong bao",JOptionPane.ERROR_MESSAGE);
+        else{
+            int confirm =JOptionPane.showConfirmDialog(this,"Ban chac chan muon xoa ?","Xac nhan",JOptionPane.YES_NO_OPTION);
+            if(confirm == JOptionPane.YES_OPTION){
+                dstk.remove(row);
+                loadtable(dstk);
+            }
+        }
     }//GEN-LAST:event_butxoaActionPerformed
 
     private void tableTKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableTKMouseClicked
         // TODO add your handling code here:
-        
+        dongchon = tableTK.getSelectedRow();
+        if(dongchon != -1){
+            tk = dstk.get(dongchon);
+            txtten.setText(tk.hoten);
+            txtid.setText(tk.phutrach);
+            txtemail.setText(tk.email);
+            txtdiachi.setText(tk.diachi);
+            txtsdt.setText(String.valueOf(tk.sdt));
+            txttk.setText(tk.userName);
+            txtmk.setText(tk.passWord);
+        }
     }//GEN-LAST:event_tableTKMouseClicked
     
     private void buttimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttimActionPerformed
         // TODO add your handling code here:
-        
+        try {
+            ArrayList<KhachHang> tkh= new ArrayList<>();
+            String tim= getTxtten().getText().trim();
+            for(KhachHang i :dstk){
+                if( tim.compareToIgnoreCase(i.hoten)==0){
+                    if(!tkh.contains(i))
+                        tkh.add(i);
+                }
+            }
+            loadtable(tkh);
+            if(tkh.isEmpty()){
+                JOptionPane.showMessageDialog(null, "không tìm thấy");
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Tim kiem: " + e.toString());
+        }
     }//GEN-LAST:event_buttimActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
             // TODO add your handling code here:
+            loadtable(dstk);
+            txtid.setText("");
+            txtten.setText("");
+            txtsdt.setText("");
+            txtemail.setText("");
+            txttk.setText("");
+            txtmk.setText("");
+            txtdiachi.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void butghiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butghiActionPerformed
         // TODO add your handling code here:
-   
+         try {
+            db.luuFile(fName, dstk);
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
     }//GEN-LAST:event_butghiActionPerformed
 
     private void butdocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butdocActionPerformed
-        
+        ArrayList<KhachHang> kh= null;
+        try {
+            kh = (ArrayList<KhachHang>) db.docFile(fName);
+        } catch (Exception e) {
+            System.out.println("Có lỗi: " + e.toString());
+        } 
+        loadtable(kh);
     }//GEN-LAST:event_butdocActionPerformed
 
+    public JTextField getTxtid()throws Exception {
+        if(txtid.getText().equals(""))
+            throw new Exception("ko duoc de trong phu trach!");
+        return txtid;
+    }
     
+    public JTextField getTxtdiachi() throws Exception{
+        if(txtdiachi.getText().equals(""))
+            throw new Exception("ko duoc de trong dia chi!");
+        return txtdiachi;
+    }
+
+    public JTextField getTxtemail()throws Exception {
+        if(txtemail.getText().equals(""))
+            throw new Exception("ko duoc de trong email!");
+        return txtemail;
+    }
+
+    public JTextField getTxtmk()throws Exception {
+        if(txtmk.getText().equals(""))
+            throw new Exception("ko duoc de trong mat khau!");
+        return txtmk;
+    }
+
+    public JTextField getTxtsdt() throws Exception {
+        if(txtsdt.getText().equals(""))
+            throw new Exception("ko duoc de trong sdt!");
+        return txtsdt;
+    }
+
+    public JTextField getTxtten() throws Exception{
+        if(txtten.getText().equals(""))
+            throw new Exception("ko duoc de trong ten!");
+        return txtten;
+    }
+
+    public JTextField getTxttk() throws Exception{
+        if(txttk.getText().equals(""))
+            throw new Exception("ko duoc de trong userName!");
+        return txttk;
+    }
     /**
      * @param args the command line arguments
      */
@@ -375,4 +533,7 @@ public class QLTK_Jframe extends javax.swing.JFrame implements Serializable{
     private javax.swing.JTextField txtten;
     private javax.swing.JTextField txttk;
     // End of variables declaration//GEN-END:variables
+
+
+    
 }

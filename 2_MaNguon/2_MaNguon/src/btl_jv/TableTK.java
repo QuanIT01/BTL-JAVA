@@ -54,5 +54,7 @@ public class TableTK extends AbstractTableModel{
         return name[column]; // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
     }
     
+
+    
 }
 

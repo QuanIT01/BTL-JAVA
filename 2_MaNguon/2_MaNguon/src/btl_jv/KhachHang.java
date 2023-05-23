@@ -100,10 +100,4 @@ public class KhachHang extends TaiKhoan implements Serializable{
         final KhachHang other = (KhachHang) obj;
         return Objects.equals(this.id, other.id);
     }
-    
-    
-
-    
-    
-    
 }
