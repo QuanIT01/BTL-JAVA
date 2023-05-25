@@ -1,5 +1,5 @@
 # BTL-JAVA
-NHÓM 10 
+NHÓM 10 gồm các 
 THÀNH VIÊN : 
  - Nguyễn Văn Quyết --> Chức năng quản lí đơn hàng
  - Nguyễn Hồng Quân --> Chức năng quản lí sản phẩm
