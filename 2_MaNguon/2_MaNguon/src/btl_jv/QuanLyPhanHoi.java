@@ -23,7 +23,52 @@ import javax.swing.JOptionPane;
  */
 public class QuanLyPhanHoi extends javax.swing.JFrame {
 
-    
+    DBEngine db = new DBEngine();
+    String fName = "dsPhanHoi.txt";
+    ArrayList<QLPH> dsph = new ArrayList<>();
+    int chon = -1;
+    //File fileName = new File("PhanHoi_Excel.xlsx");
+
+    public void luuFile() {
+        try {
+            db.luuFile(fName, dsph);
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+    }
+
+    public void docFile() {
+        try {
+            dsph = (ArrayList) db.docFile(fName);
+        } catch (Exception e) {
+            System.out.println("Có lỗi: " + e.toString());
+        }
+    }
+
+    public void loadtablePhanHoi() {
+        tablePH.setModel(new TablePhanHoi(dsph));
+    }
+
+    public void close() {
+        WindowEvent closeWindow = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closeWindow);
+    }
+
+    public QuanLyPhanHoi() {
+        initComponents();
+        dsph.add(new QLPH("KH01", "Vũ Văn Thuấn", "anh1.jpg", "Tất cả các sản phẩm đều chất lượng, áo dày dặn màu sắc tươi sáng", 9.5));
+        dsph.add(new QLPH("KH02", "Hoàng Thị Huệ", "anh2.png", "Sản phẩm đều chất lượng,có vài chiếc màu hơi khác so với còn lại", 8));
+        dsph.add(new QLPH("KH03", "Trần Văn Cảnh", "anh4.jpg", "Thiếu 5 chiếc áo đồng phục màu hè", 5));
+        dsph.add(new QLPH("KH04", "Nguyễn Thị Thu Hồng", "anh5.png", "Có 2 chiếc áo khoác đồng phục bị rách phần cánh tay", 6));
+        dsph.add(new QLPH("KH05", "Trần Văn Hải", "anh10.png", "Tất cả các sản phẩm đều chất lượng, áo dày dặn màu sắc tươi sáng", 9));
+        dsph.add(new QLPH("KH06", "Hoàng Hạnh Lan", "anh8.png", "Hẹn ngày 12 giao nhưng đến ngày 20 mới giao", 4.5));
+
+        tablePH.setModel(new TablePhanHoi(dsph));
+        ButtonGroup gr = new ButtonGroup();
+        gr.add(radGiam);
+        gr.add(radTang);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -204,38 +249,83 @@ public class QuanLyPhanHoi extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     private void radTang(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radTang
-       
+        Comparator<QLPH> c = new Comparator<QLPH>() {
+            @Override
+            public int compare(QLPH o1, QLPH o2) {
+                //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                return Double.compare(o1.diemDG, o2.diemDG);
+            }
+        };
+        Collections.sort(dsph, c);
+        loadtablePhanHoi();
     }//GEN-LAST:event_radTang
 
     private void radGiam(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radGiam
-        
+        Comparator<QLPH> c = new Comparator<QLPH>() {
+            @Override
+            public int compare(QLPH o1, QLPH o2) {
+                //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                return Double.compare(o2.diemDG, o1.diemDG);
+            }
+        };
+        Collections.sort(dsph, c);
+        loadtablePhanHoi();
     }//GEN-LAST:event_radGiam
 
-    
+    ArrayList<QLPH> dsPHXD = new ArrayList<>();
     private void btnXayDung(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXayDung
-        
+        for (QLPH s : dsph) {
+            if (s.getDiemDG() <= 7) {
+                dsPHXD.add(s);
+                tablePH.setModel(new TablePhanHoi(dsPHXD));
+            }
+        }
     }//GEN-LAST:event_btnXayDung
 
-    
+    ArrayList<QLPH> dsPHTC = new ArrayList<>();
     private void btnTichCuc(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTichCuc
-        
+        for (QLPH s : dsph) {
+            if (s.getDiemDG() > 7) {
+                dsPHTC.add(s);
+                tablePH.setModel(new TablePhanHoi(dsPHTC));
+            }
+        }
     }//GEN-LAST:event_btnTichCuc
 
     private void btnAn(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAn
-        
+        try {
+            int row = tablePH.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(QuanLyPhanHoi.this, "Chọn phản hồi muốn ẩn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                int confirm = JOptionPane.showConfirmDialog(QuanLyPhanHoi.this, "Bạn có chắc muốn ẩn phản hồi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    dsph.remove(row);
+                    loadtablePhanHoi();
+                    JOptionPane.showMessageDialog(QuanLyPhanHoi.this, "Đã ẩn phản hồi", "", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
     }//GEN-LAST:event_btnAn
 
     private void btnThoat(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoat
-        
+        close();
     }//GEN-LAST:event_btnThoat
 
     private void btnLuuFile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLuuFile
-        
+        luuFile();
+        JOptionPane.showMessageDialog(this,
+                "Lưu file thành công !", "Thông báo", WIDTH);
     }//GEN-LAST:event_btnLuuFile
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        if (JOptionPane.showConfirmDialog(null, "Bạn chắc chắn muốn đóng ?", "Thong bao", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     /**

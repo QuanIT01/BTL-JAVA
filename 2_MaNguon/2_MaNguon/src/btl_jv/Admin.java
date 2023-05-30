@@ -120,21 +120,31 @@ public class Admin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnQlDonHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQlDonHActionPerformed
-       
+        // TODO add your handling code here:
+        QuanLyDonHang qlDH = new QuanLyDonHang();
+        qlDH.setLocationRelativeTo(null);
+        qlDH.setVisible(true);
     }//GEN-LAST:event_btnQlDonHActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+        // TODO add your handling code here:
+        QLSP qlSP = new QLSP();
+        qlSP.setLocationRelativeTo(null);
+        qlSP.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnUSerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUSerActionPerformed
         // TODO add your handling code here:
-        
+        QLTK_Jframe n = new QLTK_Jframe();
+        n.setLocationRelativeTo(null);
+        n.setVisible(true);
     }//GEN-LAST:event_btnUSerActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        
+        QuanLyPhanHoi dlPH = new QuanLyPhanHoi();
+        dlPH.setLocationRelativeTo(null);
+        dlPH.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

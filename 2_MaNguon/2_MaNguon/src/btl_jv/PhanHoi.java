@@ -28,7 +28,10 @@ public class PhanHoi extends javax.swing.JFrame {
         initComponents();
     }
 
-    
+    public void close() {
+        WindowEvent closeWindow = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closeWindow);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -173,25 +176,52 @@ public class PhanHoi extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnChonFile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonFile
-        
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter img = new FileNameExtensionFilter("hình ảnh", "jpg", "png");
+        fileChooser.setFileFilter(img);
+        fileChooser.setMultiSelectionEnabled(false);
+
+        int x = fileChooser.showDialog(this, "Chọn file");
+        if (x == JFileChooser.APPROVE_OPTION) {
+            File f = fileChooser.getSelectedFile();
+            fileChon.setIcon(new ImageIcon(f.getAbsolutePath()));
+        }
     }//GEN-LAST:event_btnChonFile
 
     private void btnGui(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGui
         //if ("".equals(diemDG.getText())) {
-        
+        try {
+            if (Double.parseDouble(diemDG.getText()) < 0 || Double.parseDouble(diemDG.getText()) > 10) {
+                jLabel1.setForeground(Color.red);
+                JOptionPane.showMessageDialog(null, "Điểm đánh giá phải nằm trong khoảng từ 0 đến 10!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            } else if ("".equals(txtYK.getText())) {
+                jLabel2.setForeground(Color.red);
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập đóng góp!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Đánh giá của bạn đã gửi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+        }
+
     }//GEN-LAST:event_btnGui
 
     private void btnThoat(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoat
-        
+        close();
     }//GEN-LAST:event_btnThoat
 
     private void btnReset(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReset
-        
+        diemDG.setText("");
+        fileChon.setIcon(null);
+        txtYK.setText("");
     }//GEN-LAST:event_btnReset
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        if (JOptionPane.showConfirmDialog(null, "Bạn chắc chắn muốn đóng ?", "Thong bao", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     /**

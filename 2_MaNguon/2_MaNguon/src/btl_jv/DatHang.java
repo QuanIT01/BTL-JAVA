@@ -32,7 +32,57 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class DatHang extends javax.swing.JFrame {
 
-    
+    /**
+     * Creates new form DatHang
+     */
+    ArrayList<DonHang> dsDH = new ArrayList<>();
+
+    DonHang dh = new DonHang();
+
+    int chonDong = -1;
+    int i = 0;
+
+    void TongTien() {
+        double sumTT = 0;
+        for (DonHang i : dsDH) {
+            sumTT += i.TongTien();
+        }
+        lbTongTien.setText(String.valueOf(sumTT) + " VND");
+    }
+
+    void LoadTable(ArrayList<DonHang> dsDH) {
+        tableDH.setModel(new TableDatHang(dsDH));
+    }
+
+    void CbxLoaiSP() {
+        String tenLoai[] = {"Quần áo thể dục", "Áo khoác", "Đồng phục thực hành"};
+        cbxLoaiSP.setModel(new DefaultComboBoxModel<>(tenLoai));
+    }
+
+    void CbxKhoaH() {
+        String tenKhoa[] = {"K17", "K16", "K15", "K14"};
+        cbxKhoa.setModel(new DefaultComboBoxModel<>(tenKhoa));
+    }
+
+    void CbxSize() {
+        String size[] = {"S", "M", "L", "XL", "2XL", "3XL"};
+        cbxsize.setModel(new DefaultComboBoxModel<>(size));
+    }
+
+    public DatHang() {
+//        dsDH.add(new DonHang("D100", "abc", "KTPM1", "CNTT", "Ao khoac", "S", "K15", 10, 100000));
+        initComponents();
+        CbxLoaiSP();
+        CbxKhoaH();
+        CbxSize();
+        lbGiaTien.setText("100000");
+        LoadTable(dsDH);
+        TongTien();
+        ButtonGroup grSP = new ButtonGroup();
+        grSP.add(RdTang);
+        grSP.add(RdGiam);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -372,12 +422,12 @@ public class DatHang extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel1)
                                         .addComponent(txtTenLop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel5)
                                         .addComponent(cbxLoaiSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
-                                        .addGap(28, 28, 28)
+                                        .addGap(44, 44, 44)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                 .addComponent(Khoa)
@@ -417,75 +467,339 @@ public class DatHang extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void linkFeedbackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_linkFeedbackMouseClicked
-        
+        // TODO add your handling code here:
+        PhanHoi fb = new PhanHoi();
+        fb.setLocationRelativeTo(null);
+        fb.setVisible(true);
     }//GEN-LAST:event_linkFeedbackMouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        
+        // TODO add your handling code here:
+        if (JOptionPane.showConfirmDialog(this, "Ban muon dang xuat?", "Dang xuat", JOptionPane.YES_NO_OPTION, 0) == JOptionPane.YES_OPTION) {
+            this.dispose();
+            DangNhap dn = new DangNhap();
+            dn.setLocationRelativeTo(null);
+            dn.setVisible(true);
+        }
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void btnXemMauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXemMauActionPerformed
-        
+        // TODO add your handling code here:
+        MauSP mSp = new MauSP();
+        mSp.setLocationRelativeTo(null);
+        mSp.setVisible(true);
     }//GEN-LAST:event_btnXemMauActionPerformed
 
-    
+    public JTextField getTxtTenLop() throws Exception {
+        if (txtTenLop.getText().equals("")) {
+            throw new Exception("Không được để trống tên");
+        }
+        return txtTenLop;
+    }
 
-   
+    public JTextField getTxtKhoa() throws Exception {
+        if (txtKhoa.getText().equals("")) {
+            throw new Exception("Không được để trống tên khoa");
+        }
+        return txtKhoa;
+    }
+
+    public JTextField getTxtSLD() throws Exception {
+        if (Integer.parseInt(txtSLD.getText()) < 0) {
+            throw new Exception("Số lượng phải > 0");
+        }
+        return txtSLD;
+    }
+
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-        
+        try {
+            i = ++i;
+            String tenLop = getTxtTenLop().getText().trim();
+            String tenKhoa = getTxtKhoa().getText().trim();
+            String loaiSP = (String) cbxLoaiSP.getSelectedItem();
+            String size = (String) cbxsize.getSelectedItem();
+            String khoa = (String) cbxKhoa.getSelectedItem();
+            int soLuong = Integer.parseInt(getTxtSLD().getText().trim() + "");
+            double giaTien = Double.parseDouble(lbGiaTien.getText() + "");
+            DonHang dhn = new DonHang("D" + String.valueOf(i), labelUser.getText(), tenLop, tenKhoa, loaiSP, size, khoa, soLuong, giaTien, 0);
+            dsDH.add(dhn);
+            LoadTable(dsDH);
+            TongTien();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
 
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void cbxLoaiSPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxLoaiSPItemStateChanged
         // TODO add your handling code here:
-        
+        double giaTien = 0;
+        switch (cbxLoaiSP.getSelectedIndex()) {
+            case 0:
+                giaTien = 100000;
+                break;
+            case 1:
+                giaTien = 110000;
+                break;
+            case 2:
+                giaTien = 120000;
+                break;
+            default:
+                giaTien = 100000;
+        }
+        lbGiaTien.setText(String.valueOf(giaTien));
     }//GEN-LAST:event_cbxLoaiSPItemStateChanged
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-        
+        try {
+            chonDong = tableDH.getSelectedRow();
+            if (chonDong != -1) {
+                dh = dsDH.get(chonDong);
+                DonHang dnUpdate = new DonHang();
+                dnUpdate.setMaDH(dh.getMaDH());
+                dnUpdate.setUserName(labelUser.getText());
+                dnUpdate.setTenLop(getTxtTenLop().getText() + "");
+                dnUpdate.setTenKhoa(getTxtKhoa().getText());
+                dnUpdate.setSoLuongDat(Integer.parseInt(getTxtSLD().getText()));
+                dnUpdate.setTenSP((String) cbxLoaiSP.getSelectedItem());
+                dnUpdate.setGiaTien(Double.parseDouble(lbGiaTien.getText()));
+                dnUpdate.setKhoas((String) cbxKhoa.getSelectedItem());
+                dnUpdate.setSize((String) cbxsize.getSelectedItem());
+                dsDH.set(chonDong, dnUpdate);
+                LoadTable(dsDH);
+                TongTien();
+            } else {
+                JOptionPane.showMessageDialog(null, "Chưa chọn dòng sửa", "Thong bao", 0);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
 
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void tableDHMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableDHMouseClicked
         // TODO add your handling code here:
+        try {
+            chonDong = tableDH.getSelectedRow();
+            if (chonDong != -1) {
+                dh = dsDH.get(chonDong);
+                txtTenLop.setText(dh.tenLop);
+                txtKhoa.setText(dh.tenKhoa);
+                txtSLD.setText(String.valueOf(dh.soLuongDat));
+                cbxLoaiSP.setSelectedItem(dh.tenSP);
+                cbxKhoa.setSelectedItem(dh.khoas);
+                cbxsize.setSelectedItem(dh.size);
+            } else {
+                JOptionPane.showMessageDialog(null, "Chưa chọn dòng", "Thong bao", 0);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
 
     }//GEN-LAST:event_tableDHMouseClicked
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
         // TODO add your handling code here:
+        try {
+            chonDong = tableDH.getSelectedRow();
+            if (chonDong != -1) {
+                if (JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa đơn hàng này?", "Thong bao", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                    dsDH.remove(chonDong);
+                    LoadTable(dsDH);
+                    TongTien();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Chưa chọn đơn hàng cần xóa.", "Thong bao", 1);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.toString());
+        }
+
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void btnRqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRqActionPerformed
-        // TODO add your handling code here:       
+        // TODO add your handling code here:
+        int d = 0;
+        if (dsDH.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Không có đơn hàng nào trong danh sách", "Thong bao", JOptionPane.WARNING_MESSAGE);
+        } else {
+            for (DonHang donHang : dsDH) {
+                if (donHang.yeuC == 0) {
+                    donHang.setYeuC(1);
+                    d++;
+                }
+            }
+            if (d == 0) {
+                JOptionPane.showMessageDialog(null, "Không có đơn hàng nào chưa gửi.", "Thong bao", 1);
+            } else {
+                JOptionPane.showMessageDialog(null, "Yêu cầu đặt hàng đã được gửi.", "Thong bao", 1);
+            }
+
+            LoadTable(dsDH);
+        }
+
     }//GEN-LAST:event_btnRqActionPerformed
 
-    
+    Workbook workbook = new XSSFWorkbook(); // tạo mới đối tượng đại diện cho excel.
+    Sheet sheet = (Sheet) workbook.createSheet("DatHang"); // tạo 1 đối tượng sheet, đại diện cho sheet bên trong file Excel
+
+    public void pt_XuatFileExcel(JTable table) throws IOException {
+
+        // tạo tên cột 
+        Row headerRow = sheet.createRow(0);
+        for (i = 0; i < table.getColumnCount(); i++) {
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(table.getColumnName(i));
+            // tạo font chữ đận cho tên cột 
+            org.apache.poi.ss.usermodel.Font font = workbook.createFont();
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            org.apache.poi.ss.usermodel.CellStyle style = workbook.createCellStyle();
+            style.setFont(font);
+            headerCell.setCellStyle(style);
+        }
+
+        // thêm dữ liệu trong jtable vào trong file
+        for (i = 0; i < table.getRowCount(); i++) {
+            Row row = sheet.createRow(i + 1);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                Cell cell = row.createCell(j);
+                cell.setCellValue(table.getValueAt(i, j).toString());
+            }
+        }
+        FileOutputStream fileOut = new FileOutputStream("Dat_Hang.xlsx");
+        workbook.write(fileOut);
+        fileOut.close();
+        JOptionPane.showMessageDialog(null, "Đã xuất ra file: Dat_Hang.xlsx");
+    }
     private void btnXuatFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatFileActionPerformed
-        // TODO add your handling code here:        
-    }//GEN-LAST:event_btnXuatFileActionPerformed
-    
-    private void btnDocFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocFileActionPerformed
         // TODO add your handling code here:
+        try {
+            pt_XuatFileExcel(tableDH);
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+        }
+
+    }//GEN-LAST:event_btnXuatFileActionPerformed
+    void importTable(String filename) throws Exception {
+        Workbook workbookt = WorkbookFactory.create(new FileInputStream(filename));
+        Sheet sheet = workbookt.getSheetAt(0);
+
+        DefaultTableModel model = new DefaultTableModel();
+
+        Row headerRow = sheet.getRow(0);
+        for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+            Cell headerCell = headerRow.getCell(i);
+            model.addColumn(headerCell.getStringCellValue());
+        }
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            Object[] rowData = new Object[row.getLastCellNum()];
+            for (int j = 0; j < row.getLastCellNum(); j++) {
+                Cell cell = row.getCell(j);
+                rowData[j] = cell.getStringCellValue();
+            }
+            model.addRow(rowData);
+        }
+        tableDH.setModel(model);
+    }
+    private void btnDocFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocFileActionPerformed
+        try {
+            // TODO add your handling code here:
+            importTable("Dat_Hang.xlsx");
+
+            for (i = 0; i < tableDH.getRowCount(); i++) {
+                int j = 0;
+                String maDH = tableDH.getValueAt(i, j).toString();
+                String userName = tableDH.getValueAt(i, j + 1).toString();
+                String tenLop = tableDH.getValueAt(i, j + 2).toString();
+                String tenKhoa = tableDH.getValueAt(i, j + 3).toString();
+                String LoaiSP = tableDH.getValueAt(i, j + 4).toString();
+                String size = tableDH.getValueAt(i, j + 5).toString();
+                String khoas = tableDH.getValueAt(i, j + 6).toString();
+                int slD = Integer.parseInt(tableDH.getValueAt(i, j + 7).toString());
+                double gT = Double.parseDouble(tableDH.getValueAt(i, j + 8).toString());
+                int yc;
+                if (tableDH.getValueAt(i, j + 8).toString().equals("Đã gửi")) {
+                    yc = 1;
+                } else {
+                    yc = 0;
+                }
+                dh = new DonHang(maDH, userName, tenLop, tenKhoa, LoaiSP, size, khoas, slD, gT / slD, yc);
+                if (!dsDH.contains(dh)) {
+                    dsDH.add(dh);
+                }
+                System.out.println(dh);
+
+            }
+            LoadTable(dsDH);
+            TongTien();
+            JOptionPane.showMessageDialog(null, "Doc tu file: Dat_Hang.xlsx");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
     }//GEN-LAST:event_btnDocFileActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        LoadTable(dsDH);
+        txtKhoa.setText("");
+        txtSLD.setText("");
+        txtTenLop.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        try {
+            ArrayList<DonHang> dht = new ArrayList<>();
+            String tim = getTxtTenLop().getText().trim();
+            for (DonHang d : dsDH) {
+                if (tim.compareToIgnoreCase(d.tenLop) == 0) {
+                    if (!dht.contains(d)) {
+                        dht.add(d);
+                        LoadTable(dht);
+                    }
+                }
+            }
+            if (dht.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "không tìm thấy ");
+                LoadTable(dsDH);
+            }
+            
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Tìm kiếm: " + e.toString());
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void RdTangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RdTangActionPerformed
         // TODO add your handling code here:
-        
+        Comparator<DonHang> c = new Comparator<DonHang>() {
+            @Override
+            public int compare(DonHang o1, DonHang o2) {
+                //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                return Integer.compare(o1.soLuongDat, o2.soLuongDat);
+            }
+        };
+        Collections.sort(dsDH, c);
+        LoadTable(dsDH);
     }//GEN-LAST:event_RdTangActionPerformed
 
     private void RdGiamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RdGiamActionPerformed
         // TODO add your handling code here:
+        Comparator<DonHang> c = new Comparator<DonHang>() {
+            @Override
+            public int compare(DonHang o1, DonHang o2) {
+                //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                return Integer.compare(o1.soLuongDat, o2.soLuongDat);
+            }
+        };
+        Collections.sort(dsDH, c.reversed());
+        LoadTable(dsDH);
     }//GEN-LAST:event_RdGiamActionPerformed
 
     /**
